@@ -76,6 +76,17 @@ $("#db_info_tbl").on("click",'.edit',function() {
 	});
 });
 
+$("#db_info_tbl").on("click",'.delete',function() {
+	var dbinfoId = this.value;
+	
+	var myAjax = common.loadAjaxCall(database_info_path+"/"+dbinfoId,'delete');
+	myAjax.done(function(dbInfo){
+		console.log("Successfully deleted");
+		fetchDatabaseInfoList();
+		
+	});
+});
+
 $(".addDbInfo").click(function() {
 	$(".type-of-operation").text("Add");
 	$(".addUpdate").text("Create");
