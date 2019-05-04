@@ -1,0 +1,122 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="Query Processors">
+<meta name="author" content="Rajesh Anthari">
+<meta name="_csrf" content="Rajesh Anthari">
+<meta name="_csrf_header" content="Rajesh Anthari">
+<link rel="icon" href="/images/favicon.png">
+<link href="/css/jumbotron-narrow.css" rel="stylesheet">
+<title>Database Information</title>
+<link
+	href="https://getbootstrap.com/docs/3.4/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+</head>
+
+<body class="dbinfo">
+
+	<div class="container">
+		<div class="header clearfix">
+			<nav>
+				<ul class="nav nav-pills pull-right">
+					<li role="presentation"><a href="/">Home</a></li>
+					<li role="presentation" class="active"><a href="/databaseInfo">Database Info</a></li>
+					<li role="presentation"><a href="#">Contact</a></li>
+				</ul>
+			</nav>
+			<h3 class="text-muted">Query Engine</h3>
+		</div>
+		
+		<div class="row db-info-div">
+			<h2>Database Information</h2>
+			<div class="col-xs-12">
+				<table class="table table-striped" id="db_info_tbl">
+					<caption class="text-right"><button type="button" class="addDbInfo btn btn-success" >Add</button></caption>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Type</th>
+							<th>Driver Name</th>
+							<th>Url</th>
+							<th>Username</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+					<tfoot>
+						<tr class="hidden">
+							<td class='db-name'></td>
+							<td class='db-type'></td>
+							<td class='db-driver-name'></td>
+							<td class='db-url'></td>
+							<td class='db-username'></td>
+							<td>
+								<button type="button" class="edit btn btn-success"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+								&nbsp;
+								<button type="button" class="delete btn btn-danger"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+		
+		<div class="row db-info-div-edit">
+			<h2> <span class="type-of-operation"></span> Database Information <span class="db-info-edit-name"></span></h2>
+			<div class="col-xs-6">
+				<div class="form-group">
+				    <input type="hidden" id="dbInfoId">
+				    <label for="dbInfoName">Name</label>
+				    <input type="text" class="form-control" id="dbInfoName" placeholder="Name">
+			  	</div>
+				<div class="form-group">
+				    <label for="dbInfoType">Type</label>
+				    <select id="dbInfoType" class="form-control">
+					    <option value="1">MSSQL</option>
+					    <option value="2">POSTGRESQL</option>
+					    <option value="3">ORACLE</option>
+					    <option value="4">HANA</option>
+					</select>
+			  	</div>
+			  	<div class="form-group">
+				    <label for="dbInfoDriverName">Driver Name</label>
+				    <input type="text" class="form-control" id="dbInfoDriverName" placeholder="Driver Name">
+			  	</div>
+			  	<div class="form-group">
+				    <label for="dbInfoUrl">Driver Name</label>
+				    <input type="text" class="form-control" id="dbInfoUrl" placeholder="Jdbc Url">
+			  	</div>
+			  	<div class="form-group">
+				    <label for="dbInfoUserName">User Name</label>
+				    <input type="text" class="form-control" id="dbInfoUserName" placeholder="UserName">
+			  	</div>
+			  	<div class="form-group">
+				    <label for="dbInfoPassword">Password</label>
+				    <input type="password" class="form-control" id="dbInfoPassword" placeholder="Password">
+			  	</div>
+			  	<button type="button" class="addUpdate btn btn-primary" data-action="">Create/Update</button>
+			  	<button type="button" class="cancelAddUpdate btn btn-danger" >Cancel</button>
+			</div>
+			
+		</div>
+		
+
+		<footer class="footer">
+			<p>&copy; 2019 Randish, Inc.</p>
+		</footer>
+
+	</div>
+	<!-- /container -->
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/js/common.js"></script>
+	<script type="text/javascript" src="/js/dbinfo.js"></script>
+</body>
+</html>
