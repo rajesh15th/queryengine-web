@@ -83,7 +83,7 @@ public class DatabaseUtil {
 		Connection connection = null;
 		try {
 			connection = getConnection(databaseInfo);
-			return parseResultsToMap(searchWord, tableName, connection);
+			return parseResultsToList(searchWord, tableName, connection);
 		} finally {
 			JdbcUtils.closeConnection(connection);
 		}
@@ -91,13 +91,13 @@ public class DatabaseUtil {
 	}
 
 
-	public static List<List<String>> parseResultsToMap(String searchWord, String tableName, Connection con) throws Exception {
+	public static List<List<String>> parseResultsToList(String searchWord, String tableName, Connection con) throws Exception {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
 			stmt = con.prepareStatement(getSqlStatement(tableName));
 			rs = stmt.executeQuery();
-			return parseResultsToMap(searchWord, rs);
+			return parseResultsToList(searchWord, rs);
 		} catch (Exception e) {
 			throw e;
 		} finally {
@@ -106,17 +106,19 @@ public class DatabaseUtil {
 		}
 	}
 
-	public static List<List<String>> parseResultsToMap(String searchWord, ResultSet rs) throws SQLException {
+	public static List<List<String>> parseResultsToList(String searchWord, ResultSet rs) throws SQLException {
 		List<List<String>> data = new ArrayList<>();
 		ResultSetMetaData metaData = rs.getMetaData();
 		int columnCount = metaData.getColumnCount();
 		List<String> columnInfo = new ArrayList<>();
+		columnInfo.add("Row Number");
 		for (int i = 1; i <= columnCount; i++) {
 			columnInfo.add(metaData.getColumnLabel(i));
 		}
 		data.add(columnInfo);
 		
 		if (rs.next()) {
+			int rowCount = 1;
 			do {
 				boolean isWordFound = false;
 				for (int i = 1; i <= columnCount; i++) {
@@ -128,11 +130,13 @@ public class DatabaseUtil {
 				}
 				if (isWordFound) {
 					List<String> rowData = new ArrayList<>();
+					rowData.add(rowCount+"");
 					for (int i = 1; i <= columnCount; i++) {
 						rowData.add(rs.getString(i));
 					}
 					data.add(rowData);
 				}
+				rowCount++;
 			} while (rs.next());
 		}
 		return data;

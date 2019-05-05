@@ -2,7 +2,10 @@
  * 
  */
 
-var database_info_path = "database-info"
+var database_info_path = "database-info";
+var searchDataInfo = {};
+var lastFetchCount = 0;
+var loadInterval;
 fetchDatabaseInfoList();
 function fetchDatabaseInfoList() {
 	var dbSelectBox$ = $("#databaseInfo");
@@ -20,16 +23,23 @@ function fetchDatabaseInfoList() {
 				dbSelectBox$.append(option$);
 			});
 		}
+		setFromLocalStorage();
 	});
 }
 
-
+function setFromLocalStorage() {
+	$("#databaseInfo").val(queryLocalStorage.getItem('databaseInfoId'));
+	$("#searchWord").val(queryLocalStorage.getItem('searchWord'));
+	$("#searchId").val(queryLocalStorage.getItem('searchId'));
+	if ($("#searchId").val() != '') {
+		fetchExecutionResults();
+	}
+	
+}
 
 
 $("#getDataBtn").click(function(){
-	$("#tableNamesDiv").empty();
-	$("#tableNamesDiv").append("<h1>Tables List</h1>");
-	var myAjax = common.loadAjaxCall('processdata?searchWord='+$("#dataId").val() + '&dbInfoId='+$("#databaseInfo").val(),'get')
+	var myAjax = common.loadAjaxCall('processdata?searchWord='+$("#searchWord").val() + '&dbInfoId='+$("#databaseInfo").val(),'get')
 	myAjax.done(function(response){
 		if (response.message && response.message.code == "ERROR") {
 			alert(response.message.text);
@@ -37,6 +47,10 @@ $("#getDataBtn").click(function(){
 		}
 		var searchId = response.object;
 		$("#searchId").val(searchId);
+		queryLocalStorage.setItem('databaseInfoId',$("#databaseInfo").val());
+		queryLocalStorage.setItem('searchWord',$("#searchWord").val());
+		queryLocalStorage.setItem('searchId',searchId);
+		
 		$("#resultInfo").removeClass("hidden");
 	});
 });
@@ -48,24 +62,43 @@ $("#refreshSearchInfoBtn").click(function(){
 
 
 function fetchExecutionResults() {
+	if (!loadInterval) {
+		loadInterval = setInterval(myTimer, 2000);
+	}
 	var searchId = $("#searchId").val();
+	$("#resultInfo").removeClass("hidden");
 	var myAjax = common.loadAjaxCall('processedData?searchId='+searchId ,'get')
 	myAjax.done(function(response){
+		if (response.message && response.message.code == "NOTFOUND") {
+			queryLocalStorage.removeItem("searchId");
+			alert(response.message.text);
+			return false;
+		}
+		
 		if (response.message && response.message.code == "ERROR") {
 			alert(response.message.text);
 			return false;
 		}
+		
 		console.log("response -> ", response);
-		var searchDataInfo = response.object;
+		searchDataInfo = response.object;
+		if ( searchDataInfo.searchCompleted ) {
+			$("#stopLookupBtn, #refreshSearchInfoBtn").hide();
+			loadIntervalStop();
+		}
 		var data = searchDataInfo.keyFoundTables;
+		var lastFetchCountTemp = data.length;
+		data = data.slice(lastFetchCount)
+		lastFetchCount = lastFetchCountTemp;
 		if (data && data.length > 0 ) {
-			var clonedObj = $("#templatePage").clone().removeClass("hidden");
-			clonedObj.removeAttr("id");
+			var clonedObj = $("#searchResultTbl tfoot tr").clone().removeClass("hidden");
+			var tbody$ = $("#searchResultTbl tbody");
 			$.each(data,function(i, tblName){
 				var newObj = clonedObj.clone();
+				newObj.find('.tblNameSno').html(i+1);
 				newObj.find('.tblName').html(tblName);
 				newObj.find('.tblCheckBox,.display-one-on-one-data').val(tblName);
-				$("#tableNamesDiv").append(newObj);
+				tbody$.append(newObj);
 			});
 		}
 	});
@@ -76,21 +109,24 @@ function fetchExecutionResults() {
 $("#tableNamesDiv").on('click','.display-one-on-one-data',function(){
 	var tableName = this.value;
 	// need to improve this
-	var dataRowDiv = $(this.closest(".row")).find(".col-xs-12:nth-child(2)")
+	//var dataRowDiv = $(this.closest(".row")).find(".col-xs-12:nth-child(2)")
+	var trClassName = "row-" + tableName.replace(".", "");
+	var dataRowDiv = $("#dataPopulate").clone().addClass(trClassName);
 	// till here
-	var inputElements$ = $(this.closest(".col-xs-12")).find("input,button")
+	var currentRow = $(this.closest("tr"));
+	var inputElements$ = currentRow.find("input,button")
 	inputElements$.prop("disabled",true);
 	
 	var header$ = dataRowDiv.find(".tblDataRow thead tr");
 	header$.empty()
 	var body$ = dataRowDiv.find(".tblDataRow tbody");
 	body$.empty();
-	var dataRowLoadingDiv = $(this.closest(".row")).find(".col-xs-12:nth-child(3)")
-	dataRowLoadingDiv.show();
+	//var dataRowLoadingDiv = $(this.closest(".row")).find(".col-xs-12:nth-child(3)")
+	//dataRowLoadingDiv.show();
 	var searchId = $("#searchId").val();
 	var myAjax = common.loadAjaxCall('tableData?tName='+tableName+'&searchId='+searchId ,'get')
 	myAjax.done(function(response){
-		dataRowLoadingDiv.hide();
+		//dataRowLoadingDiv.hide();
 		inputElements$.prop("disabled",false);
 		if (response.message && response.message.code == "ERROR") {
 			alert(response.message.text);
@@ -119,6 +155,8 @@ $("#tableNamesDiv").on('click','.display-one-on-one-data',function(){
 					});
 				});
 			}
+			$("tr."+trClassName).remove();
+			dataRowDiv.insertAfter(currentRow);
 		}
 		
 	});
@@ -136,5 +174,63 @@ $("#displaySelectedTableDataBtn").click(function(){
 		$($(obj).closest("tr")).find(".display-one-on-one-data").click();
 	});
 	
+});
+$("#executionInfoBtn").click(function(){
+	$("#refreshSearchInfoBtn, #executionInfoBtn, #tableNamesDiv").hide();
+	$("#tableInfoBtn, #executionInfoDiv").show();
+	displayExecutionInfo();
+	
+});
+$("#tableInfoBtn").click(function(){
+	$("#refreshSearchInfoBtn, #executionInfoBtn, #tableNamesDiv").show();
+	$("#tableInfoBtn,#executionInfoDiv").hide();
+	$("#refreshSearchInfoBtn").click();
+});
+
+
+
+function displayExecutionInfo() {
+	var tbl$ = $("#executionInfoTbl");
+	tbl$.find(".no-of-key-found-tables").html(searchDataInfo.keyFoundTables.length);
+	tbl$.find(".no-of-total-tables").html(searchDataInfo.totalTables.length);
+	tbl$.find(".no-of-complated-tables").html(searchDataInfo.completedTables.length);
+	tbl$.find(".no-of-pending-tables").html(searchDataInfo.pendingTables.length);
+	tbl$.find(".no-of-processing-tables").html(searchDataInfo.processingTables.length);
+	tbl$.find(".no-of-failed-tables").html(searchDataInfo.failedTables.length);
+	tbl$.find(".execution-status").html(searchDataInfo.searchCompleted ? "Completed" : "Running");
+	tbl$.find(".search-word").html(searchDataInfo.searchWord);
+	tbl$.find(".datasource-name").html(searchDataInfo.databaseInfo.name);
+	tbl$.find(".messages").html(searchDataInfo.messages);
+	tbl$.find(".total-execution-time").html(searchDataInfo.dateDiff);
+}
+
+$("#resetDataBtn").click(function(){
+	clearSearch();
+});
+
+function clearSearch() {
+	queryLocalStorage.removeItem("searchId");
+	queryLocalStorage.removeItem("searchWord");
+	queryLocalStorage.removeItem("databaseInfoId");
+	searchDataInfo = {};
+	if ( !searchDataInfo.searchCompleted ) {
+		$("#stopLookupBtn").click();
+	}
+	location.reload();
+}
+
+
+function myTimer() {
+	fetchExecutionResults();
+}
+
+function loadIntervalStop() {
+  clearInterval(loadInterval);
+}
+
+$("#stopLookupBtn").click(function(){
+	var searchId = $("#searchId").val();
+	var myAjax = common.loadAjaxCall('terminateSearchProcess?searchId='+searchId ,'get');
+	fetchExecutionResults();
 });
 

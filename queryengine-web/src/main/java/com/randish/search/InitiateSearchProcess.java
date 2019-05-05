@@ -1,37 +1,37 @@
 package com.randish.search;
 
-import java.sql.Connection;
+import java.util.Date;
 import java.util.List;
-
-import org.springframework.jdbc.support.JdbcUtils;
 
 import com.randish.exceptions.QueryEngineException;
 import com.randish.model.SearchDataInfo;
 import com.randish.util.DatabaseUtil;
+import com.randish.util.DateUtil;
 
 public class InitiateSearchProcess implements Runnable {
 
 	SearchDataInfo searchDataInfo;
 	String searchKey;
 	int index = 0;
-	Connection con;
 
 	public InitiateSearchProcess(SearchDataInfo searchDataInfo) throws Exception {
 		super();
 		this.searchDataInfo = searchDataInfo;
 		this.searchKey = searchDataInfo.getSearchWord();
-		con = DatabaseUtil.getConnection(searchDataInfo.getDatabaseInfo());
 	}
 
 	@Override
 	public void run() {
 		try {
+			searchDataInfo.setStartDate(new Date());
 			startExecution();
 		} catch (Exception e) {
 			e.printStackTrace();
 			searchDataInfo.addMessage(e.getMessage());
 		} finally {
-			JdbcUtils.closeConnection(con);
+			searchDataInfo.setSearchCompleted(true);
+			searchDataInfo.setEndDate(new Date());
+			searchDataInfo.setDateDiff(DateUtil.getDifference(searchDataInfo.getStartDate(), searchDataInfo.getEndDate()));
 		}
 	}
 
@@ -50,7 +50,7 @@ public class InitiateSearchProcess implements Runnable {
 				break;
 			}
 			try {
-				new Thread(new QueryEngineSearch(searchDataInfo, con, tableNames.get(index), searchKey)).run();
+				new Thread(new QueryEngineSearch(searchDataInfo, tableNames.get(index), searchKey)).start();
 				index++;
 			} catch (QueryEngineException e) {
 				Thread.sleep(5000);

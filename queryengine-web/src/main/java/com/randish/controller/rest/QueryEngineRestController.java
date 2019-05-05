@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.randish.model.DataResponse;
 import com.randish.model.DatabaseInfo;
+import com.randish.model.SearchDataInfo;
 import com.randish.search.HandleSearchExecution;
 import com.randish.service.DatabaseInfoService;
 
@@ -39,11 +40,30 @@ public class QueryEngineRestController {
 			return new DataResponse("ERROR", e.getMessage());
 		}
 	}
+	@GetMapping("/terminateSearchProcess")
+	public DataResponse terminateSearchProcess(@RequestParam(value = "searchId", required = false) String searchId,
+			@RequestParam(value = "tName", required = false) String tableName) {
+		try {
+			SearchDataInfo searchDataInfo = handleSearchExecution.getSearchDataInfo(searchId);
+			if (searchDataInfo != null) {
+				searchDataInfo.setTerminateSearch(true);
+				return new DataResponse("SUCCESS","Terminated");
+			} else {
+				return new DataResponse("NOTFOUND","Execution details not found");
+			}
+		} catch (Exception e) {
+			return new DataResponse("ERROR", e.getMessage());
+		}
+	}
 	
 	@GetMapping("/processedData")
 	public DataResponse processedData(@RequestParam(value = "searchId", required = false) String searchId) {
 		try {
-			return new DataResponse(handleSearchExecution.getSearchDataInfo(searchId));
+			SearchDataInfo searchDataInfo = handleSearchExecution.getSearchDataInfo(searchId);
+			if (searchDataInfo == null) {
+				return new DataResponse("NOTFOUND","Execution details not found");
+			}
+			return new DataResponse(searchDataInfo);
 		} catch (Exception e) {
 			return new DataResponse("ERROR", e.getMessage());
 		}

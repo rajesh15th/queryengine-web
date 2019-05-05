@@ -20,6 +20,10 @@ public class SearchDataInfo {
 	private List<String> failedTables = new ArrayList<>();
 	private DatabaseInfo databaseInfo = null;
 	private List<String> messages = new ArrayList<>();
+	private Date startDate = null;
+	private Date endDate = null;
+	private String dateDiff = null;
+	
 	
 	public void addCompletedTableName(String tableName) {
 		synchronized (completedTables) {
@@ -168,7 +172,28 @@ public class SearchDataInfo {
 		getMessages().add(new Date() + "\t" + message);
 	}
 
-	
-	
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getDateDiff() {
+		return dateDiff;
+	}
+
+	public void setDateDiff(String dateDiff) {
+		this.dateDiff = dateDiff;
+	}
 	
 }

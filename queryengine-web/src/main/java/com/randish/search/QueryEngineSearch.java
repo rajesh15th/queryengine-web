@@ -17,11 +17,10 @@ public class QueryEngineSearch implements Runnable {
 
 	private SearchDataInfo searchDataInfo;
 	private String tableName, searchWord;
-	private Connection con;
 	final static int MAX_NO_OF_SEARCH_PROCESSES = 8;
 	static Integer currentRunningProcesses = 0;
 	
-	public QueryEngineSearch(SearchDataInfo searchDataInfo, Connection con, String tableName, String searchWord) throws Exception {
+	public QueryEngineSearch(SearchDataInfo searchDataInfo, String tableName, String searchWord) throws Exception {
 		
 		if ( MAX_NO_OF_SEARCH_PROCESSES == currentRunningProcesses ) {
 			throw new QueryEngineException("Max no of process limit reached (" + MAX_NO_OF_SEARCH_PROCESSES + ")");
@@ -31,7 +30,6 @@ public class QueryEngineSearch implements Runnable {
 		}
 		
 		this.searchDataInfo = searchDataInfo;
-		this.con = con;
 		this.tableName = tableName;
 		this.searchWord = searchWord;
 		searchDataInfo.addProcessingTableName(tableName);
@@ -59,9 +57,11 @@ public class QueryEngineSearch implements Runnable {
 	}
 
 	private boolean startExtraction() throws Exception {
+		Connection con = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
+			con = DatabaseUtil.getConnection(searchDataInfo.getDatabaseInfo());
 			stmt = con.prepareStatement(DatabaseUtil.getSqlStatement(tableName));
 			rs = stmt.executeQuery();
 			return searchData(searchWord, rs);
@@ -70,6 +70,7 @@ public class QueryEngineSearch implements Runnable {
 		} finally {
 			JdbcUtils.closeResultSet(rs);
 			JdbcUtils.closeStatement(stmt);
+			JdbcUtils.closeConnection(con);
 		}
 	}
 
