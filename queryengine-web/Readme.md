@@ -23,8 +23,11 @@ There are two screens for in this product
 ### Here we can screen choose the datasource and search the word in it.
 
 *	select the datasource and enter the word you want to search
+![alt Input page](https://raw.githubusercontent.com/rajesh15th/queryengine-web/master/queryengine-web/src/main/resources/query-engine/word-search-results.JPG)
 *	Once you click on the Get Data button, we can see the results page
-* 	There are several buttons we have  
+* 	There are several buttons.
+![alt Input page](https://raw.githubusercontent.com/rajesh15th/queryengine-web/master/queryengine-web/src/main/resources/query-engine/results-page.JPG)
+![alt Input page](https://raw.githubusercontent.com/rajesh15th/queryengine-web/master/queryengine-web/src/main/resources/query-engine/execution-information.JPG)
 
 ## Database configuration
 Its a CRUD operation database info table.
