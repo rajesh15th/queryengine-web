@@ -27,10 +27,10 @@
 					<li role="presentation"><a href="#">Contact</a></li>
 				</ul>
 			</nav>
-			<h3 class="text-muted">Query Engine</h3>
+			<h3 class="text-muted">Database Word Search Engine</h3>
 		</div>
 
-		<div class="row">
+		<div class="row well">
 			<div class="col-xs-12">
 				<div class="form-group">
 					<label for="databaseInfo">Select database</label>
@@ -45,11 +45,11 @@
 				</div>
 				<div class="form-group">
 					<button class="btn btn-primary" type="button" id="getDataBtn">Get Data</button>
-					<button class="btn btn-primary" type="button" id="resetDataBtn">Reset</button>
+					<button class="btn btn-warning" type="button" id="resetDataBtn">Reset</button>
 				</div>
 			</div>
 		</div>
-		<div class="row hidden" id="resultInfo">
+		<div class="row hidden well" id="resultInfo">
 			<div class="col-xs-12 right" id="functionalBtns">
 				<button type="button" class="btn btn-primary" id="displayAllTableDataBtn"> Display All Table Data</button>
 				<button type="button" class="btn btn-primary hidden" id="displaySelectedTableDataBtn"> Display Selected Tables Data</button>
@@ -61,6 +61,13 @@
 			<hr>
 			<div class="col-xs-12" id="tableNamesDiv">
 				<h1>Tables List</h1>
+				<div class="row">
+					<div class="col-xs-12">
+						<h2><span class="btn-success no-of-tables-processed"></span> out of <span class="no-of-total-table"></span> tables processed</h2>
+						<br>
+						<h2><span class="btn-success search-key-info"></span> word found in <span class="no-of-key-found-processed"></span> tables</h2>
+					</div>
+				</div>
 				<div class="row">
 					<div class="col-xs-12">
 						<table class="table table-bordered" style="with:100%;" id="searchResultTbl">
@@ -180,7 +187,7 @@
 	<script src="https://code.jquery.com/jquery-1.12.4.min.js" crossorigin="anonymous"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/js/common.js"></script>
-	<script type="text/javascript" src="/js/dbSearchEngine.js"></script>
+	<script type="text/javascript" src="/js/db-search-engine.js"></script>
 	<script type="text/javascript" src="/js/local-storage.js"></script>
 </body>
 </html>

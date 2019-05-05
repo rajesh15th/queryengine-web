@@ -22,6 +22,9 @@ function fetchDatabaseInfoList() {
 				var option$ = $("<option>",{value:dbInfo.id, text:dbInfo.name})
 				dbSelectBox$.append(option$);
 			});
+		} else {
+			alert("Database not configured. Please configure and return to search page");
+			location.href = "/databaseInfo"
 		}
 		setFromLocalStorage();
 	});
@@ -39,7 +42,7 @@ function setFromLocalStorage() {
 
 
 $("#getDataBtn").click(function(){
-	var myAjax = common.loadAjaxCall('processdata?searchWord='+$("#searchWord").val() + '&dbInfoId='+$("#databaseInfo").val(),'get')
+	var myAjax = common.loadAjaxCall('processdata?searchWord='+$("#searchWord").val() + '&dbInfoId='+$("#databaseInfo").val(),'get');
 	myAjax.done(function(response){
 		if (response.message && response.message.code == "ERROR") {
 			alert(response.message.text);
@@ -50,7 +53,7 @@ $("#getDataBtn").click(function(){
 		queryLocalStorage.setItem('databaseInfoId',$("#databaseInfo").val());
 		queryLocalStorage.setItem('searchWord',$("#searchWord").val());
 		queryLocalStorage.setItem('searchId',searchId);
-		
+		loadInterval = setInterval(myTimer, 2000);
 		$("#resultInfo").removeClass("hidden");
 	});
 });
@@ -82,9 +85,17 @@ function fetchExecutionResults() {
 		
 		console.log("response -> ", response);
 		searchDataInfo = response.object;
+		
+		$(".no-of-tables-processed").text(searchDataInfo.completedTables.length)
+		$(".no-of-total-table").text(searchDataInfo.totalTables.length)
+		$(".search-key-info").text(searchDataInfo.searchWord)
+		$(".no-of-key-found-processed").text(searchDataInfo.keyFoundTables.length)
+		
 		if ( searchDataInfo.searchCompleted ) {
 			$("#stopLookupBtn, #refreshSearchInfoBtn").hide();
 			loadIntervalStop();
+		} else {
+			$("#stopLookupBtn, #refreshSearchInfoBtn").show();
 		}
 		var data = searchDataInfo.keyFoundTables;
 		var lastFetchCountTemp = data.length;
@@ -232,5 +243,7 @@ $("#stopLookupBtn").click(function(){
 	var searchId = $("#searchId").val();
 	var myAjax = common.loadAjaxCall('terminateSearchProcess?searchId='+searchId ,'get');
 	fetchExecutionResults();
+	var body$ = dataRowDiv.find(".tblDataRow tbody");
+	body$.empty();
 });
 

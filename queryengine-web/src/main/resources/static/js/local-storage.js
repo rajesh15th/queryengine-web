@@ -10,10 +10,6 @@ var queryLocalStorage = {
 		}, 
 }
 
-
-localStorage.setItem("lastname", "Smith123");
-
-
 if (typeof(Storage) !== "undefined") {
 	
 } else {
