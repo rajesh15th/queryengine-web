@@ -31,11 +31,17 @@
 		</div>
 
 		<div class="row">
-			<div class="col-xs-12 ">
+			<div class="col-xs-12">
+				<div class="form-group">
+					<label for="dataId">Select database</label>
+					<select class="form-control" id="databaseInfo">
+					</select>
+				</div>
 				<div class="form-group">
 					<label for="dataId">Enter data piece</label> <input type="email"
 						class="form-control" id="dataId"
-						placeholder="Enter need to fetch piece of info">
+						placeholder="Enter search word">
+						<input type="text" id="searchId">
 				</div>
 				<div class="form-group">
 					<button class="btn btn-primary" type="button" id="getDataBtn">Get Data</button>
@@ -47,6 +53,7 @@
 				<button type="button" class="btn btn-primary" id="displayAllTableDataBtn"> Display All Table Data</button>
 				<button type="button" class="btn btn-primary" id="displaySelectedTableDataBtn"> Display Selected Tables Data</button>
 				<button type="button" class="btn btn-danger" id="stopLookupBtn"> Stop Table lookup</button>
+				<button type="button" class="btn btn-primary" id="refreshSearchInfoBtn"> Refresh Data </button>
 			</div>
 			<hr>
 			<div class="col-xs-12" id="tableNamesDiv">

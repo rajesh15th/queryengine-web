@@ -27,5 +27,13 @@ public class DataResponse {
 	public String toString() {
 		return "DataResponse [message=" + message + ", object=" + object + "]";
 	}
+	public DataResponse() {
+	}
+	public DataResponse(String errorMessage,String errorText) {
+		setMessage(errorMessage, errorText);
+	}
 	
+	public DataResponse(Object object) {
+		setObject(object);
+	}
 }

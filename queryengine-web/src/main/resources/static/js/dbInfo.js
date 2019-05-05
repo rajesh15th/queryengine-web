@@ -7,12 +7,18 @@ var database_info_path = "database-info"
 var dbInfoTbl = $(".db-info-div");
 var dbInfoTblEdit = $(".db-info-div-edit");
 dbInfoTblEdit.hide();
+
 fetchDatabaseInfoList();
 function fetchDatabaseInfoList() {
 	var tbody$ = $("#db_info_tbl tbody");
 	tbody$.empty();
 	var myAjax = common.loadAjaxCall(database_info_path,'get');
-	myAjax.done(function(data){
+	myAjax.done(function(response){
+		if (response.message && response.message.code == "ERROR") {
+			alert(response.message.text);
+			return false;
+		}
+		var data = response.object;
 		if (data && data.length > 0 ) {
 			var clonedObj = $("#db_info_tbl tfoot tr").clone().removeClass("hidden");
 			$.each(data,function(i, dbInfo){
@@ -53,7 +59,12 @@ $("#db_info_tbl").on("click",'.edit',function() {
 	
 	$(".type-of-operation").text("Edit")
 	var myAjax = common.loadAjaxCall(database_info_path+"/"+dbinfoId,'get');
-	myAjax.done(function(dbInfo){
+	myAjax.done(function(response){
+		if (response.message && response.message.code == "ERROR") {
+			alert(response.message.text);
+			return false;
+		}
+		var dbInfo = response.object;
 		if (dbInfo) {
 			dbInfoTbl.hide();
 			dbInfoTblEdit.show();
@@ -113,8 +124,12 @@ $(".addUpdate").click(function(){
 	}
 	var myAjax = common.loadAjaxCall(database_info_path + url, methodType, dbInfoObj);
 	
-	myAjax.done(function(data){
-		console.log("hello", data);
+	myAjax.done(function(response){
+		if (response.message && response.message.code == "ERROR") {
+			alert(response.message.text);
+			return false;
+		}
+		console.log("hello", response);
 		fetchDatabaseInfoList();
 		$(".cancelAddUpdate").click();
 	});

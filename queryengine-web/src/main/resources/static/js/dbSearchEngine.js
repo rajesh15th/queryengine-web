@@ -2,13 +2,63 @@
  * 
  */
 
+var database_info_path = "database-info"
+fetchDatabaseInfoList();
+function fetchDatabaseInfoList() {
+	var dbSelectBox$ = $("#databaseInfo");
+	var myAjax = common.loadAjaxCall(database_info_path,'get');
+	myAjax.done(function(response){
+		if (response.message && response.message.code == "ERROR") {
+			alert(response.message.text);
+			return false;
+		}
+		var data = response.object;
+		var option$ = $("<option>",{value:'0', text:'Select'})
+		if (data && data.length > 0 ) {
+			$.each(data,function(i, dbInfo){
+				var option$ = $("<option>",{value:dbInfo.id, text:dbInfo.name})
+				dbSelectBox$.append(option$);
+			});
+		}
+	});
+}
+
+
+
+
 $("#getDataBtn").click(function(){
 	$("#tableNamesDiv").empty();
 	$("#tableNamesDiv").append("<h1>Tables List</h1>");
-	var myAjax = common.loadAjaxCall('processdata?dataId='+$("#dataId").val(),'get')
-	myAjax.done(function(data){
+	var myAjax = common.loadAjaxCall('processdata?searchWord='+$("#dataId").val() + '&dbInfoId='+$("#databaseInfo").val(),'get')
+	myAjax.done(function(response){
+		if (response.message && response.message.code == "ERROR") {
+			alert(response.message.text);
+			return false;
+		}
+		var searchId = response.object;
+		$("#searchId").val(searchId);
+		$("#resultInfo").removeClass("hidden");
+	});
+});
+
+$("#refreshSearchInfoBtn").click(function(){
+	fetchExecutionResults();
+});
+
+
+
+function fetchExecutionResults() {
+	var searchId = $("#searchId").val();
+	var myAjax = common.loadAjaxCall('processedData?searchId='+searchId ,'get')
+	myAjax.done(function(response){
+		if (response.message && response.message.code == "ERROR") {
+			alert(response.message.text);
+			return false;
+		}
+		console.log("response -> ", response);
+		var searchDataInfo = response.object;
+		var data = searchDataInfo.keyFoundTables;
 		if (data && data.length > 0 ) {
-			$("#resultInfo").removeClass("hidden");
 			var clonedObj = $("#templatePage").clone().removeClass("hidden");
 			clonedObj.removeAttr("id");
 			$.each(data,function(i, tblName){
@@ -19,7 +69,9 @@ $("#getDataBtn").click(function(){
 			});
 		}
 	});
-});
+} 
+
+
 
 $("#tableNamesDiv").on('click','.display-one-on-one-data',function(){
 	var tableName = this.value;
@@ -35,10 +87,16 @@ $("#tableNamesDiv").on('click','.display-one-on-one-data',function(){
 	body$.empty();
 	var dataRowLoadingDiv = $(this.closest(".row")).find(".col-xs-12:nth-child(3)")
 	dataRowLoadingDiv.show();
-	var myAjax = common.loadAjaxCall('tableData?tName='+tableName+'&dataId='+$("#dataId").val(),'get')
-	myAjax.done(function(data){
+	var searchId = $("#searchId").val();
+	var myAjax = common.loadAjaxCall('tableData?tName='+tableName+'&searchId='+searchId ,'get')
+	myAjax.done(function(response){
 		dataRowLoadingDiv.hide();
 		inputElements$.prop("disabled",false);
+		if (response.message && response.message.code == "ERROR") {
+			alert(response.message.text);
+			return false;
+		}
+		var data = response.object;
 		if (data && data.length > 0 ) {
 			
 			var thElement$ = $("<th>");

@@ -1,4 +1,4 @@
-package com.randish.controller.rest;
+package com.randish.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,10 +12,10 @@ public class IndexController {
 		System.out.println("in home page");
 		return "index";
 	}
+
 	@GetMapping("/databaseInfo")
 	public String databaseInfo(ModelAndView mv) {
 		System.out.println("databaseInfo");
 		return "databaseInfo";
 	}
-
 }

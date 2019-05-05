@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.randish.model.DataResponse;
 import com.randish.model.DatabaseInfo;
 import com.randish.service.DatabaseInfoService;
+import com.randish.util.DatabaseUtil;
 
 @RestController
 @RequestMapping("/database-info")
@@ -24,24 +26,34 @@ public class DatabaseInfoController {
 	DatabaseInfoService databaseInfoService;
 	
 	@GetMapping
-	public List<DatabaseInfo> getAllInfo() {
-		return databaseInfoService.getAllDatabaInfoList();
+	public DataResponse getAllInfo() {
+		return new DataResponse(databaseInfoService.getAllDatabaInfoList());
 	}
 
 	@GetMapping("/{id}")
-	public DatabaseInfo getInfoById(@PathVariable int id) {
-		return databaseInfoService.findById(id);
+	public DataResponse getInfoById(@PathVariable int id) {
+		return new DataResponse(databaseInfoService.findById(id));
 	}
 
 	@PostMapping
-	public DatabaseInfo addNewInfo(@RequestBody DatabaseInfo newInfo) {
-		return databaseInfoService.insert(newInfo);
+	public DataResponse addNewInfo(@RequestBody DatabaseInfo newInfo) {
+		try {
+			DatabaseUtil.validateConnection(newInfo);
+		} catch (Exception e) {
+			return new DataResponse("ERROR", e.getMessage());
+		}
+		return new DataResponse(databaseInfoService.insert(newInfo));
 	}
 
 	@PutMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
-	public DatabaseInfo updaByIdteInfo(@PathVariable int id, @RequestBody DatabaseInfo updateInfo) {
+	public DataResponse updaByIdteInfo(@PathVariable int id, @RequestBody DatabaseInfo updateInfo) {
 		updateInfo.setId(id);
-		return databaseInfoService.update(updateInfo);
+		try {
+			DatabaseUtil.validateConnection(updateInfo);
+		} catch (Exception e) {
+			return new DataResponse("ERROR", e.getMessage());
+		}
+		return new DataResponse(databaseInfoService.update(updateInfo));
 	}
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable int id) {

@@ -1,4 +1,4 @@
-package com.randish.controller.rest;
+package com.randish.repositories;
 
 import java.util.List;
 
