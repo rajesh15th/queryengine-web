@@ -17,7 +17,7 @@ public class QueryEngineSearch implements Runnable {
 
 	private SearchDataInfo searchDataInfo;
 	private String tableName, searchWord;
-	final static int MAX_NO_OF_SEARCH_PROCESSES = 8;
+	final static int MAX_NO_OF_SEARCH_PROCESSES = 24;
 	static Integer currentRunningProcesses = 0;
 	
 	public QueryEngineSearch(SearchDataInfo searchDataInfo, String tableName, String searchWord) throws Exception {

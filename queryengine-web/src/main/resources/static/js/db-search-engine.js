@@ -75,6 +75,7 @@ function fetchExecutionResults() {
 		if (response.message && response.message.code == "NOTFOUND") {
 			queryLocalStorage.removeItem("searchId");
 			alert(response.message.text);
+			location.reload();
 			return false;
 		}
 		

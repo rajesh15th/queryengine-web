@@ -1,5 +1,5 @@
 var adt = {
-		contextPath : "http://localhost:9553/"
+		contextPath : "/"
 }
 
 var common = {
@@ -14,8 +14,8 @@ var common = {
 			}
 		} else {
 			var messages = [ {
-				code : globalMessage['anvizent.message.error.code'],
-				text : globalMessage['anvizent.package.label.unableToProcessYourRequest']
+				code : 'ERROR',
+				text : 'Unable To Process Your Request'
 			} ];
 			this.displayMessages(messages);
 		}
