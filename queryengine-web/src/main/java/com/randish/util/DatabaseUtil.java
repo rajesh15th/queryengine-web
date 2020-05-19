@@ -63,7 +63,7 @@ public class DatabaseUtil {
 		String tableNamesQuery = null;
 		try {
 			con = getConnection(databaseInfo);
-			tableNamesQuery = getTablesQuery(databaseInfo.getType());
+			tableNamesQuery = getTablesQuery(databaseInfo.getType(), databaseInfo.getUserName());
 			pst = con.prepareStatement(tableNamesQuery);
 			rs = pst.executeQuery();
 			while (rs.next()) {
@@ -158,7 +158,7 @@ public class DatabaseUtil {
 		return sql;
 	}
 	
-	public static String getTablesQuery(int type) {
+	public static String getTablesQuery(int type, String userName) {
 		String sql = "";
 		switch (type) {
 		case DatabaseTypes.MSSQL:
@@ -168,6 +168,8 @@ public class DatabaseUtil {
 			sql = "SELECT concat(table_schema,'.',table_name) as table_name FROM INFORMATION_SCHEMA.TABLES WHERE  table_schema='public' and TABLE_TYPE='BASE TABLE' order by table_name;";
 			break;
 		case DatabaseTypes.ORACLE:
+			sql = "SELECT OBJECT_NAME FROM ALL_OBJECTS  WHERE OBJECT_TYPE = 'TABLE' AND UPPER(OWNER) = '"+userName.toUpperCase()+"'";
+			break;
 		case DatabaseTypes.HANA:
 			sql = "SELECT 'Hello world' as name from dual";
 			break;
